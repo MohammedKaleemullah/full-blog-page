@@ -4,6 +4,11 @@ from starlette.middleware.cors import CORSMiddleware
 import logging
 import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
+from app.routers import upload_router
+from fastapi.staticfiles import StaticFiles
+
+from app.routers import user_router, blog_router, auth_router
+from app.middleware.logging_middleware import LoggingMiddleware
 
 app = FastAPI(title="Blog App API", version="1.0.0")
 
@@ -41,11 +46,17 @@ class TraceIdMiddleware(BaseHTTPMiddleware):
 app.add_middleware(TraceIdMiddleware)
 
 # Include your routers here as before
-from app.routers import user_router, blog_router, auth_router
+
 app.include_router(user_router.router)
 app.include_router(blog_router.router)
 app.include_router(auth_router.router)
+app.include_router(upload_router.router)
 
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+app.add_middleware(LoggingMiddleware)
+
+# 4. Root endpoint
 @app.get("/")
 def root():
     return {"message": "Welcome to Blog App API"}

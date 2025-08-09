@@ -8,12 +8,31 @@ import uuid
 from sqlalchemy import cast, String
 from sqlalchemy.dialects.postgresql import array
 
+from app.core.sanitizer import sanitize_html
+
+def is_valid_image_url(url: Optional[str]) -> bool:
+    if url is None:
+        return True
+    return url.startswith("/uploads/")
+
 
 def create_blog(db: Session, blog_data: BlogCreate, user_id: uuid.UUID) -> Blog:
+
+    clean_content = sanitize_html(blog_data.content)
+
+    if not is_valid_image_url(blog_data.main_image_url):
+        raise ValueError("Invalid main image URL")
+
+    if blog_data.sub_images:
+        for url in blog_data.sub_images:
+            if not is_valid_image_url(url):
+                raise ValueError("Invalid sub image URL")
+            
+
     blog = Blog(
         user_id=user_id,
         title=blog_data.title,
-        content=blog_data.content,
+        content=clean_content,
         visibility=blog_data.visibility,
         main_image_url=blog_data.main_image_url,
         sub_images=blog_data.sub_images or [],
@@ -56,8 +75,11 @@ def update_blog(db: Session, blog_id: uuid.UUID, blog_data: BlogUpdate) -> Blog:
     blog = db.query(Blog).filter(Blog.id == blog_id, Blog.is_deleted == False).first()
     if not blog:
         return None
+    
+    if 'content' in blog_data.model_dump(exclude_unset=True):
+        blog_data.content = sanitize_html(blog_data.content)
 
-    for field, value in blog_data.dict(exclude_unset=True).items():
+    for field, value in blog_data.model_dump(exclude_unset=True).items():
         setattr(blog, field, value)
 
     db.commit()
