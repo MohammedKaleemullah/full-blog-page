@@ -27,5 +27,4 @@ async def upload_image(file: UploadFile = File(...)):
         content = await file.read()
         buffer.write(content)
 
-    # In production, you might want to serve these files via CDN or static files
     return JSONResponse(content={"url": f"/uploads/{unique_filename}"})

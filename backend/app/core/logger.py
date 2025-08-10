@@ -1,14 +1,13 @@
-import logging
-import sys
-import json_log_formatter
+# import logging
+# import sys
+# import json_log_formatter
 
-formatter = json_log_formatter.JSONFormatter()
+# formatter = json_log_formatter.JSONFormatter()
 
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(formatter)
+# handler = logging.StreamHandler(sys.stdout)
+# handler.setFormatter(formatter)
 
-logger = logging.getLogger("blog_app_logger")
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)  # Default level
+# logger = logging.getLogger("blog_app_logger")
+# logger.addHandler(handler)
+# logger.setLevel(logging.INFO)
 
-# Usage: logger.info({...}), logger.error({...})
