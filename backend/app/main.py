@@ -15,7 +15,7 @@ app = FastAPI(title="Blog App API", version="1.0.0")
 # 1. CORS Middleware setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # adjust to your frontend origin(s)
+    allow_origins=["http://localhost:5173"],  # adjust to your frontend origin(s)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
